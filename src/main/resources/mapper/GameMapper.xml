@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huace.laofx.portalapi.mapper.GameMapper">
+	<insert id="insertOrUpdateGameScore">
+		insert into game_score
+		(
+			user_id,
+			cost_time,
+			play_time
+		)
+		values
+		(
+			#{userId},
+			#{costTime},
+			#{playTime}
+		)
+		on duplicate key update
+			cost_time = #{costTime},
+			play_time = #{playTime}
+	</insert>
+
+	<insert id="insertPlayRecord">
+		insert into play_record
+		(
+			user_id,
+			cost_time,
+			play_time
+		)
+		values
+		(
+			#{userId},
+			#{costTime},
+			#{playTime}
+		)
+	</insert>
+	
+	<select id="getPlayerRank" resultType="com.huace.laofx.portalapi.entity.GameScore">
+		select
+			a.user_id,
+			b.nickname,
+			b.avatar,
+			a.cost_time,
+			a.play_time
+		from
+			game_score a inner join user_info b on a.user_id = b.id
+		order by 
+			a.cost_time asc, a.play_time asc
+		limit
+			#{offset}, #{limit}
+	</select>
+	
+	<select id="selectGameScoreByUserId" resultType="com.huace.laofx.portalapi.entity.GameScore">
+		select
+			a.user_id,
+			b.nickname,
+			b.avatar,
+			a.cost_time,
+			a.play_time
+		from
+			game_score a inner join user_info b on a.user_id = b.id
+		where
+			user_id = #{userId}
+	</select>
+</mapper>

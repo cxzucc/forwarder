@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huace.laofx.portalapi.mapper.UserInfoMapper">
+	<insert id="insertOrUpdate">
+		insert into user_info
+		(
+			nickname,
+			sex,
+			country,
+			province,
+			city,
+			avatar,
+			open_id,
+			create_date
+		)
+		values
+		(
+			#{nickname},
+			#{sex},
+			#{country},
+			#{province},
+			#{city},
+			#{avatar},
+			#{openId},
+			now()
+		)
+		on duplicate key update
+			nickname = #{nickname},
+			sex = #{sex},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			avatar = #{avatar},
+			update_date = now()
+	</insert>
+	
+	<update id="updateContactInformation">
+		update
+			user_info
+		set
+			mobile = #{mobile},
+			realname = #{realname}
+		where
+			open_id = #{openId}
+	</update>
+	
+	<select id="selectById" resultType="com.huace.laofx.portalapi.entity.UserInfo">
+		select
+			id,
+			nickname,
+			mobile,
+			realname,
+			sex,
+			country,
+			province,
+			city,
+			avatar,
+			open_id,
+			create_date,
+			update_date
+		from
+			user_info
+		where
+			id = #{id}
+	</select>
+	
+	<select id="selectByOpenId" resultType="com.huace.laofx.portalapi.entity.UserInfo">
+		select
+			id,
+			nickname,
+			mobile,
+			realname,
+			sex,
+			country,
+			province,
+			city,
+			avatar,
+			open_id,
+			create_date,
+			update_date
+		from
+			user_info
+		where
+			open_id = #{openId}
+	</select>
+</mapper>
