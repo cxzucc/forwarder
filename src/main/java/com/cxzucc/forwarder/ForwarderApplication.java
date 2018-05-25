@@ -95,8 +95,8 @@ public class ForwarderApplication {
 		httpGet.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000)
 				.setSocketTimeout(30000).build());
 
-		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-		try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+		try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+				CloseableHttpResponse response = httpClient.execute(httpGet)) {
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				String responseBody = EntityUtils.toString(response.getEntity());
 				if ("true".equals(responseBody)) {
@@ -104,8 +104,6 @@ public class ForwarderApplication {
 				}
 			}
 		} catch (Exception e) {
-		} finally {
-			HttpClientUtils.closeQuietly(httpClient);
 		}
 
 		return false;
@@ -117,8 +115,8 @@ public class ForwarderApplication {
 		httpGet.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000)
 				.setSocketTimeout(30000).build());
 
-		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-		try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+		try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+				CloseableHttpResponse response = httpClient.execute(httpGet)) {
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				String responseBody = EntityUtils.toString(response.getEntity());
 				if ("true".equals(responseBody)) {
@@ -126,8 +124,6 @@ public class ForwarderApplication {
 				}
 			}
 		} catch (Exception e) {
-		} finally {
-			HttpClientUtils.closeQuietly(httpClient);
 		}
 
 		return false;
