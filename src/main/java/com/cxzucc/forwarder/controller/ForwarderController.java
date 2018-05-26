@@ -1,6 +1,7 @@
 package com.cxzucc.forwarder.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,7 +29,7 @@ public class ForwarderController {
 	public ResponseEntity<ForwarderResponseEntity> forward(@RequestBody ForwarderRequestEntity requestEntity) {
 		String url = requestEntity.getUrl();
 		String method = requestEntity.getMethod();
-		Map<String, String> headers = requestEntity.getHeaders();
+		Map<String, List<String>> headers = requestEntity.getHeaders();
 		String body = requestEntity.getBody();
 		String contentType = requestEntity.getContentType();
 
@@ -37,8 +38,12 @@ public class ForwarderController {
 		int retryTimes = requestEntity.getRetryTimes();
 
 		Request.Builder builder = new Request.Builder().url(url);
-		for (Entry<String, String> entry : headers.entrySet()) {
-			builder.addHeader(entry.getKey(), entry.getValue());
+		if (headers != null) {
+			for (Entry<String, List<String>> entry : headers.entrySet()) {
+				for (String value : entry.getValue()) {
+					builder.addHeader(entry.getKey(), value);
+				}
+			}
 		}
 
 		Request request = null;

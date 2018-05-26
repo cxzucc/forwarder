@@ -10,16 +10,13 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.cxzucc.forwarder.util.OkHttpClient;
+
+import okhttp3.Request;
+import okhttp3.Response;
 
 @SpringBootApplication
 public class ForwarderApplication {
@@ -91,15 +88,11 @@ public class ForwarderApplication {
 	public static boolean login(String orderNo, String ip) {
 		String loginUrl = "http://101.37.105.154/v1/tools/login?orderNo=" + orderNo + "&ip=" + ip + "&port=10088";
 
-		HttpGet httpGet = new HttpGet(loginUrl);
-		httpGet.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000)
-				.setSocketTimeout(30000).build());
-
-		try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-				CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				String responseBody = EntityUtils.toString(response.getEntity());
-				if ("true".equals(responseBody)) {
+		Request request = new Request.Builder().get().url(loginUrl).build();
+		try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+			if (response.isSuccessful()) {
+				String body = response.body().string();
+				if ("true".equals(body)) {
 					return true;
 				}
 			}
@@ -111,15 +104,11 @@ public class ForwarderApplication {
 
 	public static boolean logout(String orderNo) {
 		String logoutUrl = "http://101.37.105.154/v1/tools/logout?orderNo=" + orderNo;
-		HttpGet httpGet = new HttpGet(logoutUrl);
-		httpGet.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000)
-				.setSocketTimeout(30000).build());
-
-		try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-				CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				String responseBody = EntityUtils.toString(response.getEntity());
-				if ("true".equals(responseBody)) {
+		Request request = new Request.Builder().get().url(logoutUrl).build();
+		try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+			if (response.isSuccessful()) {
+				String body = response.body().string();
+				if ("true".equals(body)) {
 					return true;
 				}
 			}
@@ -130,23 +119,17 @@ public class ForwarderApplication {
 	}
 
 	public static boolean testConnection() {
-		HttpGet httpGet = new HttpGet("http://101.37.105.154/v1/tools/echo_headers");
-		httpGet.setConfig(RequestConfig.custom().setConnectionRequestTimeout(5000).setConnectTimeout(5000)
-				.setSocketTimeout(5000).build());
+		Request request = new Request.Builder().get().url("http://101.37.105.154/v1/tools/echo_headers").build();
 
-		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 		for (int i = 0; i < 3; i++) {
-			try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					EntityUtils.consumeQuietly(response.getEntity());
-					HttpClientUtils.closeQuietly(httpClient);
+			try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+				if (response.isSuccessful()) {
 					return true;
 				}
 			} catch (Exception e) {
 			}
 		}
 
-		HttpClientUtils.closeQuietly(httpClient);
 		return false;
 	}
 

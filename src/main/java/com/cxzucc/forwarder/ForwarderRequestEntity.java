@@ -1,6 +1,7 @@
 package com.cxzucc.forwarder;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 public class ForwarderRequestEntity implements Serializable {
@@ -8,7 +9,7 @@ public class ForwarderRequestEntity implements Serializable {
 
 	private String url;
 	private String method;
-	private Map<String, String> headers;
+	private Map<String, List<String>> headers;
 	private String body;
 	private String contentType;
 	private long connectTimeout;
@@ -31,11 +32,11 @@ public class ForwarderRequestEntity implements Serializable {
 		this.method = method;
 	}
 
-	public Map<String, String> getHeaders() {
+	public Map<String, List<String>> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(Map<String, String> headers) {
+	public void setHeaders(Map<String, List<String>> headers) {
 		this.headers = headers;
 	}
 
