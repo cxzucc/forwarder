@@ -10,6 +10,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -20,6 +21,8 @@ import okhttp3.Response;
 
 @SpringBootApplication
 public class ForwarderApplication {
+
+	private static String LAST_IP = null;
 
 	public static void main(String[] args) throws IOException {
 		SpringApplication.run(ForwarderApplication.class, args);
@@ -86,6 +89,13 @@ public class ForwarderApplication {
 	}
 
 	public static boolean login(String orderNo, String ip) {
+		if (StringUtils.equals(LAST_IP, ip)) {
+			System.out.println("IP重复");
+			return false;
+		} else {
+			LAST_IP = ip;
+		}
+
 		String loginUrl = "http://101.37.105.154/v1/tools/login?orderNo=" + orderNo + "&ip=" + ip + "&port=10088";
 
 		Request request = new Request.Builder().get().url(loginUrl).build();
