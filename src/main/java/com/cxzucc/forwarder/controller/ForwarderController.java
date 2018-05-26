@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,8 @@ import okhttp3.Response;
 @RestController
 @RequestMapping("/forwarder")
 public class ForwarderController {
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private Map<String, MediaType> map = new HashMap<>();
 
 	@PostMapping
@@ -63,6 +67,7 @@ public class ForwarderController {
 			request = builder.post(requestBody).build();
 		}
 
+		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < retryTimes; i++) {
 			try {
 				Response response = OkHttpClient.execute(request, connectTimeout, readTimeout);
@@ -82,10 +87,15 @@ public class ForwarderController {
 				responseEntity.setMessage(response.message());
 				responseEntity.setProtocol(response.protocol());
 
+				long endTime = System.currentTimeMillis();
+				logger.error("req {} success, retry {} times, cost {}", url, i + 1, (endTime - startTime));
 				return ResponseEntity.ok(responseEntity);
 			} catch (Exception e) {
 			}
 		}
+
+		long endTime = System.currentTimeMillis();
+		logger.error("req {} fail, retry {} times, cost {}", url, retryTimes, (endTime - startTime));
 
 		ForwarderResponseEntity responseEntity = new ForwarderResponseEntity();
 		responseEntity.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

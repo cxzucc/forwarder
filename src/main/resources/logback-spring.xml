@@ -36,7 +36,7 @@
 
 	<springProfile name="prod">
 		<root level="ERROR">
-			<appender-ref ref="CONSOLE" />
+			<appender-ref ref="ROLLING" />
 		</root>
 	</springProfile>
 </configuration>
