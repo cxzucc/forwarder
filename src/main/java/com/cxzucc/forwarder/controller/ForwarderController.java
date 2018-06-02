@@ -88,7 +88,11 @@ public class ForwarderController {
 				responseEntity.setProtocol(response.protocol());
 
 				long endTime = System.currentTimeMillis();
-				logger.error("req {} success, retry {} times, cost {}", url, i + 1, (endTime - startTime));
+				long cost = (endTime - startTime);
+				if (cost > 3000) {
+					logger.error("req {} success, retry {} times, cost {}", url, i + 1, (cost));
+				}
+
 				return ResponseEntity.ok(responseEntity);
 			} catch (Exception e) {
 			}
