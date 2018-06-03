@@ -89,7 +89,7 @@ public class ForwarderController {
 
 				long endTime = System.currentTimeMillis();
 				long cost = (endTime - startTime);
-				if (cost > 3000) {
+				if (cost > 1000) {
 					logger.error("req {} success, retry {} times, cost {}", url, i + 1, (cost));
 				}
 
