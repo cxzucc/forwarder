@@ -90,7 +90,7 @@ public class ForwarderApplication {
 	}
 
 	public static boolean login(String orderNo, String ip) {
-		if (IP_SET.size() > 100000) {
+		if (IP_SET.size() > 1000) {
 			IP_SET = new HashSet<>();
 		}
 
@@ -155,6 +155,19 @@ public class ForwarderApplication {
 				// 在所有的接口下再遍历IP
 				for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
 					InetAddress inetAddr = inetAddrs.nextElement();
+					// System.out.println(inetAddr.toString() +
+					// ",isAnyLocalAddress=" + inetAddr.isAnyLocalAddress()
+					// + ",isSiteLocalAddress=" + inetAddr.isSiteLocalAddress()
+					// + ",isLinkLocalAddress="
+					// + inetAddr.isLinkLocalAddress() + ",isLoopbackAddress=" +
+					// inetAddr.isLoopbackAddress()
+					// + ",isMCGlobal=" + inetAddr.isMCGlobal() +
+					// ",isMCLinkLocal=" + inetAddr.isMCLinkLocal()
+					// + ",isMCNodeLocal=" + inetAddr.isMCNodeLocal() +
+					// ",isMCOrgLocal=" + inetAddr.isMCOrgLocal()
+					// + ",isMCSiteLocal=" + inetAddr.isMCSiteLocal() +
+					// ",isMulticastAddress="
+					// + inetAddr.isMulticastAddress());
 					if (inetAddr.isAnyLocalAddress() == false && inetAddr.isSiteLocalAddress() == false
 							&& inetAddr.isLinkLocalAddress() == false && inetAddr.isLoopbackAddress() == false
 							&& inetAddr.isMCGlobal() == false && inetAddr.isMCLinkLocal() == false
