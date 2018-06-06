@@ -102,7 +102,7 @@ public class ForwarderApplication {
 		String loginUrl = "http://101.37.105.154/v1/tools/login?orderNo=" + orderNo + "&ip=" + ip + "&port=10088";
 
 		Request request = new Request.Builder().get().url(loginUrl).build();
-		try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+		try (Response response = OkHttpClient.execute(request, 15000, 15000)) {
 			if (response.isSuccessful()) {
 				String body = response.body().string();
 				if ("true".equals(body)) {
@@ -110,6 +110,7 @@ public class ForwarderApplication {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return false;
@@ -118,7 +119,7 @@ public class ForwarderApplication {
 	public static boolean logout(String orderNo) {
 		String logoutUrl = "http://101.37.105.154/v1/tools/logout?orderNo=" + orderNo;
 		Request request = new Request.Builder().get().url(logoutUrl).build();
-		try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+		try (Response response = OkHttpClient.execute(request, 10000, 10000)) {
 			if (response.isSuccessful()) {
 				String body = response.body().string();
 				if ("true".equals(body)) {
@@ -210,7 +211,6 @@ public class ForwarderApplication {
 			System.out.println("已成功建立连接.");
 			return true;
 		} else {
-			System.err.println(tempCmd);
 			System.err.println("建立连接失败");
 			return false;
 		}
