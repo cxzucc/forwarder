@@ -42,16 +42,17 @@ public class ForwarderApplication {
 			String orderNo = temp[0];
 			String adslName = temp[1];
 			String adslPass = temp[2];
-			boolean isLoginSuccess = true;
+			boolean isLogin = false;
 
 			while (true) {
 				try {
 					if (testConnection()) {
 						if (logout(orderNo)) {
 							System.out.println("登出成功");
-							if (isLoginSuccess) {
+							if (isLogin) {
 								Thread.sleep(TimeUnit.MINUTES.toMillis(3));
 							}
+							isLogin = false;
 						} else {
 							System.out.println("登出失败");
 							Thread.sleep(10000);
@@ -60,6 +61,7 @@ public class ForwarderApplication {
 					}
 
 					cutAdsl("宽带连接");
+					isLogin = false;
 					if (connAdsl("宽带连接", adslName, adslPass)) {
 						Thread.sleep(1000);
 						if (testConnection()) {
@@ -68,15 +70,16 @@ public class ForwarderApplication {
 								System.out.println("ip = " + inetAddress.getHostAddress());
 								if (login(orderNo, inetAddress.getHostAddress())) {
 									System.out.println("登入成功");
-									isLoginSuccess = true;
+									isLogin = true;
 									Thread.sleep(TimeUnit.MINUTES.toMillis(7));
 								} else {
 									System.out.println("登入失败");
-									isLoginSuccess = false;
 								}
 							} else {
 								System.out.println("获取IP失败");
 							}
+						} else {
+							System.out.println("测试连接失败");
 						}
 					}
 				} catch (Exception e) {
@@ -136,7 +139,7 @@ public class ForwarderApplication {
 		Request request = new Request.Builder().get().url("http://101.37.105.154/v1/tools/echo_headers").build();
 
 		for (int i = 0; i < 3; i++) {
-			try (Response response = OkHttpClient.execute(request, 3000, 3000)) {
+			try (Response response = OkHttpClient.execute(request, 10000, 10000)) {
 				if (response.isSuccessful()) {
 					return true;
 				}
