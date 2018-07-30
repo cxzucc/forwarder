@@ -5,9 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -65,10 +62,10 @@ public class ForwarderApplication {
 					if (connAdsl("宽带连接", adslName, adslPass)) {
 						Thread.sleep(1000);
 						if (testConnection()) {
-							InetAddress inetAddress = getWebSiteAddress();
+							String inetAddress = getWebSiteAddress();
 							if (inetAddress != null) {
-								System.out.println("ip = " + inetAddress.getHostAddress());
-								if (login(orderNo, inetAddress.getHostAddress())) {
+								System.out.println("ip = " + inetAddress);
+								if (login(orderNo, inetAddress)) {
 									System.out.println("登入成功");
 									isLogin = true;
 									Thread.sleep(TimeUnit.MINUTES.toMillis(7));
@@ -150,40 +147,53 @@ public class ForwarderApplication {
 		return false;
 	}
 
-	public static InetAddress getWebSiteAddress() {
-		try {
-			// 遍历所有的网络接口
-			for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
-					.hasMoreElements();) {
-				NetworkInterface iface = ifaces.nextElement();
-				// 在所有的接口下再遍历IP
-				for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
-					InetAddress inetAddr = inetAddrs.nextElement();
-					// System.out.println(inetAddr.toString() +
-					// ",isAnyLocalAddress=" + inetAddr.isAnyLocalAddress()
-					// + ",isSiteLocalAddress=" + inetAddr.isSiteLocalAddress()
-					// + ",isLinkLocalAddress="
-					// + inetAddr.isLinkLocalAddress() + ",isLoopbackAddress=" +
-					// inetAddr.isLoopbackAddress()
-					// + ",isMCGlobal=" + inetAddr.isMCGlobal() +
-					// ",isMCLinkLocal=" + inetAddr.isMCLinkLocal()
-					// + ",isMCNodeLocal=" + inetAddr.isMCNodeLocal() +
-					// ",isMCOrgLocal=" + inetAddr.isMCOrgLocal()
-					// + ",isMCSiteLocal=" + inetAddr.isMCSiteLocal() +
-					// ",isMulticastAddress="
-					// + inetAddr.isMulticastAddress());
-					if (inetAddr.isAnyLocalAddress() == false && inetAddr.isSiteLocalAddress() == false
-							&& inetAddr.isLinkLocalAddress() == false && inetAddr.isLoopbackAddress() == false
-							&& inetAddr.isMCGlobal() == false && inetAddr.isMCLinkLocal() == false
-							&& inetAddr.isMCNodeLocal() == false && inetAddr.isMCOrgLocal() == false
-							&& inetAddr.isMCSiteLocal() == false && inetAddr.isMulticastAddress() == false) {
-						return inetAddr;
-					}
-				}
+	public static String getWebSiteAddress() {
+		Request request = new Request.Builder().get().url("http://45.32.164.128/ip.php").build();
+		try (Response response = OkHttpClient.execute(request, 10000, 10000)) {
+			if (response.isSuccessful()) {
+				return response.body().string();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		//
+		// try {
+		// // 遍历所有的网络接口
+		// for (Enumeration<NetworkInterface> ifaces =
+		// NetworkInterface.getNetworkInterfaces(); ifaces
+		// .hasMoreElements();) {
+		// NetworkInterface iface = ifaces.nextElement();
+		// // 在所有的接口下再遍历IP
+		// for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses();
+		// inetAddrs.hasMoreElements();) {
+		// InetAddress inetAddr = inetAddrs.nextElement();
+		// // System.out.println(inetAddr.toString() +
+		// // ",isAnyLocalAddress=" + inetAddr.isAnyLocalAddress()
+		// // + ",isSiteLocalAddress=" + inetAddr.isSiteLocalAddress()
+		// // + ",isLinkLocalAddress="
+		// // + inetAddr.isLinkLocalAddress() + ",isLoopbackAddress=" +
+		// // inetAddr.isLoopbackAddress()
+		// // + ",isMCGlobal=" + inetAddr.isMCGlobal() +
+		// // ",isMCLinkLocal=" + inetAddr.isMCLinkLocal()
+		// // + ",isMCNodeLocal=" + inetAddr.isMCNodeLocal() +
+		// // ",isMCOrgLocal=" + inetAddr.isMCOrgLocal()
+		// // + ",isMCSiteLocal=" + inetAddr.isMCSiteLocal() +
+		// // ",isMulticastAddress="
+		// // + inetAddr.isMulticastAddress());
+		// if (inetAddr.isAnyLocalAddress() == false && inetAddr.isSiteLocalAddress() ==
+		// false
+		// && inetAddr.isLinkLocalAddress() == false && inetAddr.isLoopbackAddress() ==
+		// false
+		// && inetAddr.isMCGlobal() == false && inetAddr.isMCLinkLocal() == false
+		// && inetAddr.isMCNodeLocal() == false && inetAddr.isMCOrgLocal() == false
+		// && inetAddr.isMCSiteLocal() == false && inetAddr.isMulticastAddress() ==
+		// false) {
+		// return inetAddr;
+		// }
+		// }
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 
 		return null;
 	}
