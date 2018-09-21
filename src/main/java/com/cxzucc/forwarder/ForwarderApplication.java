@@ -93,7 +93,7 @@ public class ForwarderApplication {
 
 	public static boolean login(String orderNo, String ip) {
 		if (IP_SET.size() > 500) {
-			IP_SET = new HashSet<>();
+			IP_SET.clear();
 		}
 
 		if (!IP_SET.add(ip)) {
