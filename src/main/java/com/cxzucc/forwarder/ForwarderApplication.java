@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.time.DateTime;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -71,7 +70,7 @@ public class ForwarderApplication {
 								if (login(orderNo, inetAddress.getHostAddress())) {
 									System.out.println("登入成功");
 									isLogin = true;
-									Thread.sleep(TimeUnit.MINUTES.toMillis(7));
+									Thread.sleep(TimeUnit.MINUTES.toMillis(5));
 								} else {
 									System.out.println("登入失败");
 								}
@@ -93,11 +92,11 @@ public class ForwarderApplication {
 	}
 
 	public static boolean login(String orderNo, String ip) {
-		if (IP_SET.size() > 1000) {
+		if (IP_SET.size() > 500) {
 			IP_SET = new HashSet<>();
 		}
 
-		if (!IP_SET.add(DateTime.now().toString("yyyyMMdd") + ip)) {
+		if (!IP_SET.add(ip)) {
 			System.out.println("IP重复");
 			return false;
 		}
@@ -105,7 +104,7 @@ public class ForwarderApplication {
 		String loginUrl = "http://101.37.105.154/v1/tools/login?orderNo=" + orderNo + "&ip=" + ip + "&port=10088";
 
 		Request request = new Request.Builder().get().url(loginUrl).build();
-		try (Response response = OkHttpClient.execute(request, 15000, 15000)) {
+		try (Response response = OkHttpClient.execute(request, 30000, 30000)) {
 			if (response.isSuccessful()) {
 				String body = response.body().string();
 				if ("true".equals(body)) {
@@ -122,7 +121,7 @@ public class ForwarderApplication {
 	public static boolean logout(String orderNo) {
 		String logoutUrl = "http://101.37.105.154/v1/tools/logout?orderNo=" + orderNo;
 		Request request = new Request.Builder().get().url(logoutUrl).build();
-		try (Response response = OkHttpClient.execute(request, 10000, 10000)) {
+		try (Response response = OkHttpClient.execute(request, 30000, 30000)) {
 			if (response.isSuccessful()) {
 				String body = response.body().string();
 				if ("true".equals(body)) {
